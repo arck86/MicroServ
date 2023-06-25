@@ -3,12 +3,14 @@ package es.arck.app.commons.services.impl;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.arck.app.commons.services.CommonService;
 
-public class CommonServicesImpl<E, R extends CrudRepository<E, Long>> implements CommonService<E>{
+public class CommonServicesImpl<E, R extends JpaRepository<E, Long>> implements CommonService<E>{
 	
 	@Autowired
 	protected R repository;
@@ -36,6 +38,12 @@ public class CommonServicesImpl<E, R extends CrudRepository<E, Long>> implements
 	public void deleteById(Long id) {
 		repository.deleteById(id);
 		
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<E> findAll(Pageable pageable) {
+		return repository.findAll(pageable);
 	}
 
 }

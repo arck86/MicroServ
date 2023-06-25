@@ -1,9 +1,14 @@
 package es.arck.app.microservicios.app.examenes.models.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import java.util.List;
 
-import es.arck.app.microservicios.app.examenes.models.entity.Examen;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-public interface ExamenRepository extends CrudRepository<Examen, Long> {
+import es.arck.app.microservicios.commons.examenes.models.entity.Examen;
 
+public interface ExamenRepository extends JpaRepository<Examen, Long> {
+	
+	@Query ("select e from Examen e where e.nombre like %?1%")
+	public List<Examen> findByNombre(String term);
 }
