@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import es.arck.app.microservicios.commons.alumnos.models.entity.Alumno;
 import es.arck.app.microservicios.commons.examenes.models.entity.Examen;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,6 +21,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotEmpty;
 
 @Entity
@@ -25,13 +29,18 @@ import jakarta.validation.constraints.NotEmpty;
 public class Curso {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY )
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
 	@NotEmpty
 	private String nombre;
+
+	@JsonIgnoreProperties(value= {"curso"}, allowSetters = true)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "Curso", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<CursoAlumno> cursoAlumnos;
 	
-	@OneToMany(fetch = FetchType.LAZY)
+//	@OneToMany(fetch = FetchType.LAZY)
+	@Transient
 	private List<Alumno> alumnos;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -50,6 +59,7 @@ public class Curso {
 	public Curso() {
 		this.alumnos = new ArrayList<>();
 		this.examenes = new ArrayList<>();
+		this.cursoAlumnos = new ArrayList<>();
 	}
 
 
@@ -108,6 +118,23 @@ public class Curso {
 	public void removeExamenes(Examen examen) {
 		this.examenes.remove(examen);
 	}
+
+	public List<CursoAlumno> getCursoAlumnos() {
+		return cursoAlumnos;
+	}
+
+	public void setCursoAlumnos(List<CursoAlumno> cursoAlumnos) {
+		this.cursoAlumnos = cursoAlumnos;
+	}
+	
+	public void addAlumnos(CursoAlumno cursoAlumnos) {
+		this.cursoAlumnos.add(cursoAlumnos);
+	}
+	
+	public void setCursoAlumnos(CursoAlumno cursoAlumnos) {
+		this.cursoAlumnos.remove(cursoAlumnos);
+	}
+
 
 	@Override
 	public String toString() {
